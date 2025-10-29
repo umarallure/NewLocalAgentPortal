@@ -8,9 +8,56 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Hybrid storage detector for cross-browser compatibility
+ * Tests localStorage availability and falls back to default Supabase storage (IndexedDB -> localStorage -> memory)
+ * This fixes session persistence issues on Mac Chrome/Opera where localStorage may be blocked
+ */
+const getAuthStorage = () => {
+  console.log('[Supabase Auth] Testing storage availability...');
+  
+  try {
+    // Test if localStorage is accessible and persistent
+    const testKey = '__supabase_storage_test__';
+    localStorage.setItem(testKey, '1');
+    const testValue = localStorage.getItem(testKey);
+    localStorage.removeItem(testKey);
+    
+    if (testValue === '1') {
+      console.log('[Supabase Auth] ✅ localStorage is available and persistent');
+      console.log('[Supabase Auth] Using localStorage for session storage');
+      return localStorage;
+    } else {
+      console.warn('[Supabase Auth] ⚠️ localStorage test failed: value mismatch');
+      console.log('[Supabase Auth] Falling back to Supabase default storage (IndexedDB → memory)');
+      return undefined;
+    }
+  } catch (error) {
+    // localStorage is blocked/unavailable (e.g., Opera on Mac, private mode, cookie restrictions)
+    // Return undefined to let Supabase use its default storage fallback chain
+    // (IndexedDB -> localStorage -> in-memory)
+    console.warn('[Supabase Auth] ❌ localStorage not available:', error);
+    console.log('[Supabase Auth] Browser/Environment:', {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      cookieEnabled: navigator.cookieEnabled
+    });
+    console.log('[Supabase Auth] Falling back to Supabase default storage (IndexedDB → memory)');
+    return undefined;
+  }
+};
+
+// Log the storage configuration on initialization
+const authStorage = getAuthStorage();
+console.log('[Supabase Auth] Final storage configuration:', {
+  storageType: authStorage ? 'localStorage' : 'Supabase default (IndexedDB/memory fallback)',
+  persistSession: true,
+  autoRefreshToken: true
+});
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: authStorage,
     persistSession: true,
     autoRefreshToken: true,
   },
@@ -21,3 +68,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     }
   }
 });
+
+// Log successful client creation
+console.log('[Supabase Auth] Client initialized successfully');

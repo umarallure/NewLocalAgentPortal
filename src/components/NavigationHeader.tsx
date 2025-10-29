@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { LogOut, User, Menu, ChevronDown, Grid3X3, Eye, CheckCircle, BarChart3, Search, ArrowLeft, DollarSign, ShieldCheck } from 'lucide-react';
+import { LogOut, User, Menu, ChevronDown, Grid3X3, Eye, CheckCircle, BarChart3, Search, ArrowLeft, DollarSign, ShieldCheck, Zap } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLicensedAgent } from '@/hooks/useLicensedAgent';
 import { useCenterUser } from '@/hooks/useCenterUser';
@@ -89,6 +89,10 @@ export const NavigationHeader = ({ title, showBackButton = false, backTo }: Navi
                       <Grid3X3 className="mr-2 h-4 w-4" />
                       Daily Deal Flow
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/ghl-sync')}>
+                      <Zap className="mr-2 h-4 w-4" />
+                      GHL Sync
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/transfer-portal')}>
                       <Eye className="mr-2 h-4 w-4" />
                       Transfer Portal
@@ -128,6 +132,10 @@ export const NavigationHeader = ({ title, showBackButton = false, backTo }: Navi
                     <DropdownMenuItem onClick={() => navigate('/center-lead-portal')}>
                       <Grid3X3 className="mr-2 h-4 w-4" />
                       My Leads
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/center-calendar')}>
+                      <Grid3X3 className="mr-2 h-4 w-4" />
+                      Calendar View
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/agent-licensing')}>
                       <ShieldCheck className="mr-2 h-4 w-4" />

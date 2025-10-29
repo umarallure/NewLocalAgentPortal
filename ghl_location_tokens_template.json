@@ -1,0 +1,17 @@
+{
+  "ghl_location_tokens": [
+    {
+      "locationid": "LOCATION_ID_1",
+      "access_token": "ACCESS_TOKEN_1"
+    },
+    {
+      "locationid": "LOCATION_ID_2",
+      "access_token": "ACCESS_TOKEN_2"
+    },
+    {
+      "locationid": "LOCATION_ID_3",
+      "access_token": "ACCESS_TOKEN_3"
+    }
+  ],
+  "_instructions": "Replace LOCATION_ID_X and ACCESS_TOKEN_X with your actual 30 center values"
+}

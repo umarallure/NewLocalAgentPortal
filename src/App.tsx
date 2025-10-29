@@ -14,12 +14,14 @@ import Auth from "./pages/Auth";
 import CenterAuth from "./pages/CenterAuth";
 import Dashboard from "./pages/Dashboard";
 import CenterLeadPortal from "./pages/CenterLeadPortal";
+import CenterCalendarView from "./pages/CenterCalendarView";
 import CallbackRequestPage from "./pages/CallbackRequestPage";
 import CommissionPortal from "./pages/CommissionPortal";
 import CallResultUpdate from "./pages/CallResultUpdate";
 import CallResultJourney from "./pages/CallResultJourney";
 import NewCallback from "./pages/NewCallback";
 import DailyDealFlowPage from "./pages/DailyDealFlow/DailyDealFlowPage";
+import GHLSyncPage from "./pages/GHLSyncPage";
 import TransferPortalPage from "./pages/TransferPortalPage";
 import SubmissionPortalPage from "./pages/SubmissionPortalPage";
 import BulkLookupPage from "./pages/BulkLookupPage";
@@ -54,6 +56,14 @@ const App = () => (
               element={
                 <CenterProtectedRoute>
                   <CenterLeadPortal />
+                </CenterProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/center-calendar" 
+              element={
+                <CenterProtectedRoute>
+                  <CenterCalendarView />
                 </CenterProtectedRoute>
               } 
             />
@@ -110,6 +120,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DailyDealFlowPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/ghl-sync" 
+              element={
+                <ProtectedRoute>
+                  <GHLSyncPage />
                 </ProtectedRoute>
               } 
             />
