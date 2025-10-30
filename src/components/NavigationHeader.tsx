@@ -30,19 +30,6 @@ export const NavigationHeader = ({ title, showBackButton = false, backTo }: Navi
   // Find Eligible Agents should be visible to Ben, licensed agents, and center users
   const canAccessAgentFinder = isBen || (isLicensedAgent && !licensedLoading) || (isCenterUser && !centerLoading);
 
-  console.log('[NavigationHeader] Navigation visibility:', {
-    userId: user?.id,
-    email: user?.email,
-    isLicensedAgent,
-    licensedLoading,
-    isCenterUser,
-    centerLoading,
-    isAuthorizedUser,
-    hasNavigationAccess,
-    shouldShowNavigation,
-    canAccessAgentFinder
-  });
-
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');

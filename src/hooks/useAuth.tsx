@@ -2,6 +2,13 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  saveSessionToCookie, 
+  restoreSessionFromCookie, 
+  clearSessionCookies,
+  isLocalStorageAvailable,
+  getStorageStatus
+} from '@/lib/sessionStorage';
 
 interface AuthContextType {
   user: User | null;
@@ -33,27 +40,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Log storage status on initialization
+    const storageStatus = getStorageStatus();
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        console.log('[Auth] State change:', event);
+        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Save to cookies as fallback when session changes
+        if (session && event === 'SIGNED_IN') {
+          await saveSessionToCookie();
+        } else if (event === 'SIGNED_OUT') {
+          clearSessionCookies();
+        }
       }
     );
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    const initSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If no session in localStorage, try to restore from cookies
+      if (!session && !storageStatus.localStorage) {
+        console.log('[Auth] localStorage unavailable, attempting cookie restore...');
+        const restoredSession = await restoreSessionFromCookie();
+        
+        if (restoredSession) {
+          setSession(restoredSession);
+          setUser(restoredSession.user);
+        }
+      } else {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+      
       setLoading(false);
-    });
+    };
+    
+    initSession();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -65,6 +100,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         variant: "destructive",
       });
     } else {
+      // Save session to cookies as fallback
+      if (data.session) {
+        await saveSessionToCookie();
+      }
+      
       toast({
         title: "Welcome back!",
         description: "You have been signed in successfully.",
@@ -106,6 +146,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    
+    // Clear cookie fallback storage
+    clearSessionCookies();
+    
     if (error) {
       toast({
         title: "Error signing out",

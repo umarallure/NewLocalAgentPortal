@@ -46,7 +46,7 @@ enabled = true
 port = 9999
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["https://localhost:3000"]
-jwt_expiry = 3600
+jwt_expiry = 3600  # Note: This only affects LOCAL dev, not Supabase Cloud
 refresh_token_rotation_enabled = true
 security_update_password_require_reauthentication = true
 

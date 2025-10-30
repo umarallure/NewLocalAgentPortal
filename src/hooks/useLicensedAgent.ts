@@ -21,14 +21,11 @@ export const useLicensedAgent = () => {
   useEffect(() => {
     const checkLicensedAgent = async () => {
       if (!user) {
-        console.log('[useLicensedAgent] No user found');
         setLicensedAgentInfo(null);
         setIsLicensedAgent(false);
         setLoading(false);
         return;
       }
-
-      console.log('[useLicensedAgent] Checking licensed agent status for user:', user.id, user.email);
 
       try {
         // First get agent status
@@ -39,13 +36,7 @@ export const useLicensedAgent = () => {
           .eq('agent_type', 'licensed')
           .maybeSingle();
 
-        console.log('[useLicensedAgent] Agent status query result:', {
-          data: agentStatus,
-          error: agentError
-        });
-
         if (agentError || !agentStatus) {
-          console.log('[useLicensedAgent] User is NOT a licensed agent');
           setLicensedAgentInfo(null);
           setIsLicensedAgent(false);
           setLoading(false);
@@ -59,22 +50,12 @@ export const useLicensedAgent = () => {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        console.log('[useLicensedAgent] Profile query result:', {
-          data: profile,
-          error: profileError
-        });
-
         const displayName = profileError ? null : profile?.display_name;
 
         const fullInfo: LicensedAgentInfo = {
           ...agentStatus,
           display_name: displayName
         };
-
-        console.log('[useLicensedAgent] User IS a licensed agent:', {
-          display_name: displayName,
-          agent_type: agentStatus.agent_type
-        });
 
         setLicensedAgentInfo(fullInfo);
         setIsLicensedAgent(true);
